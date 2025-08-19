@@ -39,10 +39,10 @@ They should be a sentence starting with an infinitive verb and avoid using prefi
 
 GitHub labels applies to pull requests.
 
-Pull requests should be labelled with the type of changes using [the `type: ` category](https://github.com/DataDog/terraform-azurerm-datadog-log-automation/labels?q=type).
+Pull requests should be labelled with the type of changes using [the `type: ` category](https://github.com/DataDog/terraform-azurerm-log-automation-datadog/labels?q=type).
 
 >[!NOTE]
-> For reference, the [full list of all labels available](https://github.com/DataDog/terraform-azurerm-datadog-log-automation/labels).
+> For reference, the [full list of all labels available](https://github.com/DataDog/terraform-azurerm-log-automation-datadog/labels).
 
 ## Pull request reviews
 
