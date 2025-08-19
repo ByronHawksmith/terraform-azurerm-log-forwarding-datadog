@@ -1,3 +1,3 @@
-# Terraform modules for Datadog's Azure Log Forwarding Automation.
+# Terraform modules for Datadog Azure Log Forwarding Automation.
 
-Use these Terraform modules to install Datadog's Log Forwarding Automation solution for Azure.
+Use these Terraform modules to install Datadog Azure Log Forwarding Automation solution.
