@@ -1,0 +1,3 @@
+resource_group_name = "really-great-resource-group-name"
+subscription_id     = "00000000-00aa-000a-a000-00aa0aa0a0aa"
+location            = "South Central US"
