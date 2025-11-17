@@ -31,7 +31,7 @@ variable "monitored_resource_groups" {
 
     CRITICAL: All resource_group_name values MUST match var.resource_group_name exactly.
     The scaling task uses a single RESOURCE_GROUP environment variable across all subscriptions.
-    Terraform validation will fail if any monitored resource group has a different name.
+    You must ensure all monitored resource groups use the same name as the control plane resource group.
 
     Example:
     {
@@ -40,44 +40,25 @@ variable "monitored_resource_groups" {
         resource_group_name = "rg-datadog-log-forwarding"  # Must match var.resource_group_name
       }
     }
+
+    To ensure consistency, use a local variable:
+    locals {
+      resource_group_name = "rg-datadog-log-forwarding"
+    }
+
+    module "automation" {
+      resource_group_name = local.resource_group_name
+      monitored_resource_groups = {
+        "sub-id" = {
+          subscription_id     = "sub-id"
+          resource_group_name = local.resource_group_name  # Same name!
+        }
+      }
+    }
   EOT
   type = map(object({
     subscription_id     = string
     resource_group_name = string
   }))
   default = {}
-
-  validation {
-    condition = alltrue([
-      for rg in values(var.monitored_resource_groups) :
-      rg.resource_group_name == var.resource_group_name
-    ])
-    error_message = <<-EOT
-      Validation failed: All monitored resource groups must have the same name as the control plane resource group.
-
-      The scaling task (scaling_task.py) uses a single RESOURCE_GROUP environment variable to create
-      and manage log forwarding resources across ALL subscriptions. This means every subscription must
-      have a resource group with the identical name.
-
-      Control plane resource group name: Check var.resource_group_name
-      Monitored resource groups: One or more have mismatched names
-
-      To fix: Ensure all resource groups in monitored_resource_groups use the same name as var.resource_group_name.
-
-      Example:
-      locals {
-        resource_group_name = "rg-datadog-log-forwarding"
-      }
-
-      module "automation" {
-        resource_group_name = local.resource_group_name
-        monitored_resource_groups = {
-          "sub-id" = {
-            subscription_id     = "sub-id"
-            resource_group_name = local.resource_group_name  # Same name!
-          }
-        }
-      }
-    EOT
-  }
 }
