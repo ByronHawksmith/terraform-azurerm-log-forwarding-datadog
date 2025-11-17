@@ -1,0 +1,19 @@
+# Control plane subscription where automation infrastructure will be deployed
+control_plane_subscription_id = "00000000-0000-0000-0000-000000000001"
+
+# Additional monitored subscription where resource group will be created
+monitored_subscription_id = "00000000-0000-0000-0000-000000000002"
+
+# CRITICAL: Resource group name used across ALL subscriptions
+# This same name will be used in both control plane and monitored subscriptions
+resource_group_name = "rg-datadog-log-forwarding"
+
+# Azure region
+location = "East US"
+
+# Tags to apply to all resources
+tags = {
+  environment = "production"
+  managed_by  = "terraform"
+  purpose     = "datadog-log-forwarding"
+}
