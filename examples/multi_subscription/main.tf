@@ -39,7 +39,7 @@ module "monitored_resource_group" {
     azurerm = azurerm.monitored
   }
 
-  resource_group_name = local.resource_group_name  # CRITICAL: Same name as control plane
+  resource_group_name = local.resource_group_name # CRITICAL: Same name as control plane
   location            = var.location
   tags                = var.tags
 }
@@ -53,7 +53,7 @@ module "automation" {
     azurerm = azurerm.control_plane
   }
 
-  resource_group_name = local.resource_group_name  # CRITICAL: Same name as monitored
+  resource_group_name = local.resource_group_name # CRITICAL: Same name as monitored
   location            = var.location
   tags                = var.tags
 
