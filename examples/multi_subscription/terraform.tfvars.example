@@ -17,3 +17,9 @@ tags = {
   managed_by  = "terraform"
   purpose     = "datadog-log-forwarding"
 }
+
+# Datadog API key (required - keep this secret!)
+datadog_api_key = "YOUR_DATADOG_API_KEY"
+
+# Datadog site (optional - defaults to datadoghq.com)
+# datadog_site = "datadoghq.com"
