@@ -25,3 +25,8 @@ data "azurerm_role_definition" "reader_data_access" {
   name  = "Reader and Data Access"
   scope = data.azurerm_subscription.current.id
 }
+
+data "azurerm_role_definition" "website_contributor" {
+  name  = "Website Contributor"
+  scope = data.azurerm_subscription.current.id
+}

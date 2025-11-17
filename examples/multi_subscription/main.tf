@@ -39,7 +39,7 @@ module "monitored_resource_group" {
     azurerm = azurerm.monitored
   }
 
-  resource_group_name = local.resource_group_name  # CRITICAL: Same name as control plane
+  resource_group_name = local.resource_group_name # CRITICAL: Same name as control plane
   location            = var.location
   tags                = var.tags
 }
@@ -53,13 +53,22 @@ module "automation" {
     azurerm = azurerm.control_plane
   }
 
-  resource_group_name = local.resource_group_name  # CRITICAL: Same name as monitored
+  resource_group_name = local.resource_group_name # CRITICAL: Same name as monitored
   location            = var.location
   tags                = var.tags
 
   # Datadog configuration
-  datadog_api_key = var.datadog_api_key
-  datadog_site    = var.datadog_site
+  datadog_api_key   = var.datadog_api_key
+  datadog_site      = var.datadog_site
+  datadog_telemetry = false
+
+  # Resource discovery configuration
+  resource_tag_filters = var.resource_tag_filters
+
+  # Deployer configuration
+  storage_account_url = var.storage_account_url
+  image_registry      = var.image_registry
+  deployer_image_tag  = var.deployer_image_tag
 
   # Pass the monitored resource group information to the automation module
   monitored_resource_groups = {

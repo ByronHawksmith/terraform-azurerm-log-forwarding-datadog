@@ -203,3 +203,47 @@ variable "pii_scrubber_rules" {
   type        = string
   default     = ""
 }
+
+# Deployer Configuration
+
+variable "image_registry" {
+  description = "Container registry for the deployer container image"
+  type        = string
+  default     = "datadoghq.azurecr.io"
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9._-]*\\.[a-zA-Z0-9._-]+$", var.image_registry))
+    error_message = "image_registry must be a valid container registry URL."
+  }
+}
+
+variable "deployer_image_tag" {
+  description = "Tag for the deployer container image"
+  type        = string
+  default     = "latest"
+}
+
+variable "storage_account_url" {
+  description = <<-EOT
+    URL of the public storage account containing function app deployment packages.
+    The deployer task downloads function app code from this storage account.
+    If not specified, defaults to https://ddazurelfo.blob.core.windows.net
+  EOT
+  type        = string
+  default     = "https://ddazurelfo.blob.core.windows.net"
+}
+
+variable "deployer_schedule" {
+  description = <<-EOT
+    Cron expression for deployer task schedule.
+    Default is "*/30 * * * *" (every 30 minutes).
+    Format: minute hour day month weekday
+  EOT
+  type        = string
+  default     = "*/30 * * * *"
+
+  validation {
+    condition     = can(regex("^[\\*0-9,-/]+ [\\*0-9,-/]+ [\\*0-9,-/]+ [\\*0-9,-/]+ [\\*0-9,-/]+$", var.deployer_schedule))
+    error_message = "deployer_schedule must be a valid cron expression."
+  }
+}
