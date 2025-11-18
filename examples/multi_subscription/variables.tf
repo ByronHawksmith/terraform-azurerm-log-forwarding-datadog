@@ -38,3 +38,15 @@ variable "tags" {
     managed_by  = "terraform"
   }
 }
+
+variable "datadog_api_key" {
+  description = "Datadog API key for sending logs and metrics"
+  type        = string
+  sensitive   = true
+}
+
+variable "datadog_site" {
+  description = "Datadog site to send logs to (e.g., datadoghq.com, datadoghq.eu)"
+  type        = string
+  default     = "datadoghq.com"
+}

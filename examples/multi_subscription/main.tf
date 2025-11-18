@@ -57,6 +57,10 @@ module "automation" {
   location            = var.location
   tags                = var.tags
 
+  # Datadog configuration
+  datadog_api_key = var.datadog_api_key
+  datadog_site    = var.datadog_site
+
   # Pass the monitored resource group information to the automation module
   monitored_resource_groups = {
     (module.monitored_resource_group.subscription_id) = {
