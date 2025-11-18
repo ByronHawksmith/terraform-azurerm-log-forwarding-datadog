@@ -125,10 +125,25 @@ variable "datadog_site" {
     - us3.datadoghq.com (US3)
     - us5.datadoghq.com (US5)
     - datadoghq.eu (EU1)
+    - ap1.datadoghq.com (AP1)
+    - ap2.datadoghq.com (AP2)
     - ddog-gov.com (US1-FED)
   EOT
   type        = string
   default     = "datadoghq.com"
+
+  validation {
+    condition = contains([
+      "datadoghq.com",
+      "us3.datadoghq.com",
+      "us5.datadoghq.com",
+      "datadoghq.eu",
+      "ap1.datadoghq.com",
+      "ap2.datadoghq.com",
+      "ddog-gov.com"
+    ], var.datadog_site)
+    error_message = "datadog_site must be one of: datadoghq.com, us3.datadoghq.com, us5.datadoghq.com, datadoghq.eu, ap1.datadoghq.com, ap2.datadoghq.com, ddog-gov.com."
+  }
 }
 
 variable "datadog_telemetry" {
