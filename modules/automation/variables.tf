@@ -130,7 +130,6 @@ variable "datadog_site" {
     - ddog-gov.com (US1-FED)
   EOT
   type        = string
-  default     = "datadoghq.com"
 
   validation {
     condition = contains([
