@@ -101,9 +101,9 @@ resource "azurerm_storage_account" "control_plane" {
 
 # File share for function app content
 resource "azurerm_storage_share" "function_content" {
-  name                 = local.resource_names.file_share
-  storage_account_name = azurerm_storage_account.control_plane.name
-  quota                = 50
+  name               = local.resource_names.file_share
+  storage_account_id = azurerm_storage_account.control_plane.id
+  quota              = 50
 
   depends_on = [azurerm_storage_account.control_plane]
 }
@@ -111,7 +111,7 @@ resource "azurerm_storage_share" "function_content" {
 # Blob container for control plane cache
 resource "azurerm_storage_container" "cache" {
   name                  = local.resource_names.cache_container
-  storage_account_name  = azurerm_storage_account.control_plane.name
+  storage_account_id    = azurerm_storage_account.control_plane.id
   container_access_type = "private"
 
   depends_on = [azurerm_storage_account.control_plane]
