@@ -30,6 +30,12 @@ provider "azurerm" {
   features {}
 }
 
+# Data source to get control plane subscription info
+data "azurerm_subscription" "control_plane" {
+  provider        = azurerm.control_plane
+  subscription_id = var.control_plane_subscription_id
+}
+
 # Deploy resource group in the monitored subscription
 # This resource group will be monitored by the Datadog automation
 module "monitored_resource_group" {
@@ -58,11 +64,27 @@ module "automation" {
   tags                = var.tags
 
   # Datadog configuration
-  datadog_api_key = var.datadog_api_key
-  datadog_site    = var.datadog_site
+  datadog_api_key   = var.datadog_api_key
+  datadog_site      = var.datadog_site
+  datadog_telemetry = false
 
-  # Pass the monitored resource group information to the automation module
+  # Resource discovery configuration
+  resource_tag_filters = var.resource_tag_filters
+
+  # Deployer configuration
+  storage_account_url = var.storage_account_url
+  image_registry      = var.image_registry
+  deployer_image_tag  = var.deployer_image_tag
+
+  # monitored_resource_groups will limit which subscriptions are monitored by the automation
+  # here we pass the contol plane subscription in addition to the monitored subscription to collect logs from both
   monitored_resource_groups = {
+    # Control plane subscription - where automation infrastructure lives
+    (data.azurerm_subscription.control_plane.subscription_id) = {
+      subscription_id     = data.azurerm_subscription.control_plane.subscription_id
+      resource_group_name = local.resource_group_name
+    }
+    # Monitored subscription - the separate subscription with monitored resources
     (module.monitored_resource_group.subscription_id) = {
       subscription_id     = module.monitored_resource_group.subscription_id
       resource_group_name = module.monitored_resource_group.resource_group_name

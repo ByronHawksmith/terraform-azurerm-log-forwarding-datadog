@@ -50,3 +50,44 @@ variable "datadog_site" {
   type        = string
   default     = "datadoghq.com"
 }
+
+variable "resource_tag_filters" {
+  description = "Comma-separated list of tag filters for resource discovery"
+  type        = string
+  default     = ""
+}
+
+variable "storage_account_url" {
+  description = <<-EOT
+    URL of the public storage account containing function app deployment packages.
+    The deployer task downloads function app code from this storage account.
+    If not specified, defaults to https://ddazurelfo.blob.core.windows.net
+
+    For development environments, you can override this to point to your own storage
+    account created by https://github.com/DataDog/azure-log-forwarding-orchestration/blob/main/scripts/deploy_personal_env.py
+
+    Example: "https://lfoyourusername.blob.core.windows.net"
+  EOT
+  type        = string
+  default     = "https://ddazurelfo.blob.core.windows.net"
+}
+
+variable "image_registry" {
+  description = <<-EOT
+    Container registry for the deployer container image.
+    If not specified, defaults to datadoghq.azurecr.io
+
+    For development environments, you can override this to point to your own
+    container registry created by https://github.com/DataDog/azure-log-forwarding-orchestration/blob/main/scripts/deploy_personal_env.py
+
+    Example: "lfoyourusername.azurecr.io"
+  EOT
+  type        = string
+  default     = "datadoghq.azurecr.io"
+}
+
+variable "deployer_image_tag" {
+  description = "Tag for the deployer container image"
+  type        = string
+  default     = "latest"
+}
