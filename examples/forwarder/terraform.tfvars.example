@@ -1,0 +1,21 @@
+# ==========================================
+# Required Variables
+# ==========================================
+
+# Name of your existing Azure resource group
+resource_group_name = "rg-datadog-forwarder-example"
+
+# Azure region for resources
+location = "East US"
+
+# Globally unique storage account name (3-24 lowercase alphanumeric characters)
+# Change this to something unique for your deployment
+storage_account_name = "ddlogfwdexample123"
+
+# Your Datadog API Key (32 characters)
+# Get this from: https://app.datadoghq.com/organization-settings/api-keys
+datadog_api_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Your Datadog Site
+# Common values: datadoghq.com (US1), datadoghq.eu (EU1), us3.datadoghq.com (US3), us5.datadoghq.com (US5)
+datadog_site = "datadoghq.com"
