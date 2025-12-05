@@ -32,15 +32,15 @@ locals {
 # ==========================================
 
 resource "azurerm_storage_account" "forwarder_storage" {
-  name                     = var.storage_account_name
-  resource_group_name      = data.azurerm_resource_group.current.name
-  location                 = var.location
-  account_tier             = split("_", var.storage_account_sku)[0]
-  account_replication_type = split("_", var.storage_account_sku)[1]
-  account_kind             = "StorageV2"
-  access_tier              = var.storage_access_tier
-  min_tls_version          = "TLS1_2"
-  https_traffic_only_enabled = true
+  name                            = var.storage_account_name
+  resource_group_name             = data.azurerm_resource_group.current.name
+  location                        = var.location
+  account_tier                    = split("_", var.storage_account_sku)[0]
+  account_replication_type        = split("_", var.storage_account_sku)[1]
+  account_kind                    = "StorageV2"
+  access_tier                     = var.storage_access_tier
+  min_tls_version                 = "TLS1_2"
+  https_traffic_only_enabled      = true
   allow_nested_items_to_be_public = false
 
   tags = var.tags
@@ -98,9 +98,9 @@ resource "azurerm_container_app_job" "forwarder" {
   replica_retry_limit        = var.replica_retry_limit
 
   schedule_trigger_config {
-    cron_expression                = var.schedule_expression
-    parallelism                    = 1
-    replica_completion_count       = 1
+    cron_expression          = var.schedule_expression
+    parallelism              = 1
+    replica_completion_count = 1
   }
 
   template {
