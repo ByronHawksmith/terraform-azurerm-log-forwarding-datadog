@@ -41,6 +41,7 @@ resource "azurerm_storage_account" "forwarder_storage" {
   access_tier              = var.storage_access_tier
   min_tls_version          = "TLS1_2"
   https_traffic_only_enabled = true
+  allow_nested_items_to_be_public = false
 
   tags = var.tags
 }
