@@ -94,6 +94,15 @@ resource "azurerm_storage_account" "control_plane" {
   min_tls_version                 = "TLS1_2"
   https_traffic_only_enabled      = true
   allow_nested_items_to_be_public = false
+  public_network_access_enabled   = var.private_networking_enabled ? false : true
+
+  dynamic "network_rules" {
+    for_each = var.private_networking_enabled ? [1] : []
+    content {
+      default_action = "Deny"
+      bypass         = ["AzureServices"]
+    }
+  }
 
   blob_properties {
     change_feed_enabled = false
@@ -183,6 +192,8 @@ resource "azurerm_linux_function_app" "resources_task" {
 
   https_only = true
 
+  public_network_access_enabled = var.private_networking_enabled ? false : true
+
   site_config {
     application_stack {
       python_version = "3.11"
@@ -191,7 +202,10 @@ resource "azurerm_linux_function_app" "resources_task" {
     ftps_state                             = "Disabled"
     use_32_bit_worker                      = false
     application_insights_connection_string = null
+    vnet_route_all_enabled                 = var.private_networking_enabled ? true : false
   }
+
+  virtual_network_subnet_id = var.private_networking_enabled ? var.vnet_integration_subnet_id : null
 
   app_settings = merge(
     local.common_app_settings,
@@ -234,6 +248,8 @@ resource "azurerm_linux_function_app" "scaling_task" {
 
   https_only = true
 
+  public_network_access_enabled = var.private_networking_enabled ? false : true
+
   site_config {
     application_stack {
       python_version = "3.11"
@@ -242,7 +258,10 @@ resource "azurerm_linux_function_app" "scaling_task" {
     ftps_state                             = "Disabled"
     use_32_bit_worker                      = false
     application_insights_connection_string = null
+    vnet_route_all_enabled                 = var.private_networking_enabled ? true : false
   }
+
+  virtual_network_subnet_id = var.private_networking_enabled ? var.vnet_integration_subnet_id : null
 
   app_settings = merge(
     local.common_app_settings,
@@ -288,6 +307,8 @@ resource "azurerm_linux_function_app" "diagnostic_settings_task" {
 
   https_only = true
 
+  public_network_access_enabled = var.private_networking_enabled ? false : true
+
   site_config {
     application_stack {
       python_version = "3.11"
@@ -296,7 +317,10 @@ resource "azurerm_linux_function_app" "diagnostic_settings_task" {
     ftps_state                             = "Disabled"
     use_32_bit_worker                      = false
     application_insights_connection_string = null
+    vnet_route_all_enabled                 = var.private_networking_enabled ? true : false
   }
+
+  virtual_network_subnet_id = var.private_networking_enabled ? var.vnet_integration_subnet_id : null
 
   app_settings = merge(
     local.common_app_settings,
@@ -335,6 +359,9 @@ resource "azurerm_container_app_environment" "deployer_env" {
   name                = local.resource_names.container_app_env
   location            = azurerm_resource_group.resource_group.location
   resource_group_name = azurerm_resource_group.resource_group.name
+
+  internal_load_balancer_enabled = var.private_networking_enabled
+  infrastructure_subnet_id       = var.private_networking_enabled ? var.vnet_integration_subnet_id : null
 
   tags = var.tags
 }

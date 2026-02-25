@@ -275,3 +275,24 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+# ==========================================
+# Private Networking Configuration
+# ==========================================
+
+variable "private_networking_enabled" {
+  description = "Whether to enable private networking for forwarder resources."
+  type        = bool
+  default     = false
+
+  validation {
+    condition     = !var.private_networking_enabled || var.infrastructure_subnet_id != null
+    error_message = "infrastructure_subnet_id must be set when private_networking_enabled is true."
+  }
+}
+
+variable "infrastructure_subnet_id" {
+  description = "The ID of the subnet for the Container App Environment infrastructure. Required when private_networking_enabled is true."
+  type        = string
+  default     = null
+}

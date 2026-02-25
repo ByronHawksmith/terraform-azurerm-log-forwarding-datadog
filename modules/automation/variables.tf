@@ -246,3 +246,22 @@ variable "deployer_schedule" {
     error_message = "deployer_schedule must be a valid cron expression."
   }
 }
+
+# Private Networking Configuration
+
+variable "private_networking_enabled" {
+  description = "Whether to enable private networking for all resources. When true, public network access is disabled on storage accounts, function apps, and the container app environment uses an internal load balancer. Requires vnet_integration_subnet_id to be set."
+  type        = bool
+  default     = false
+
+  validation {
+    condition     = !var.private_networking_enabled || var.vnet_integration_subnet_id != null
+    error_message = "vnet_integration_subnet_id must be set when private_networking_enabled is true."
+  }
+}
+
+variable "vnet_integration_subnet_id" {
+  description = "The ID of the subnet to use for both function app VNet integration (outbound traffic) and the container app environment infrastructure placement. Required when private_networking_enabled is true."
+  type        = string
+  default     = null
+}

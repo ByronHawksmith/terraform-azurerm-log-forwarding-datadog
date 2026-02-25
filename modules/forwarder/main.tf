@@ -46,6 +46,15 @@ resource "azurerm_storage_account" "forwarder_storage" {
   min_tls_version                 = "TLS1_2"
   https_traffic_only_enabled      = true
   allow_nested_items_to_be_public = false
+  public_network_access_enabled   = var.private_networking_enabled ? false : true
+
+  dynamic "network_rules" {
+    for_each = var.private_networking_enabled ? [1] : []
+    content {
+      default_action = "Deny"
+      bypass         = ["AzureServices"]
+    }
+  }
 
   tags = var.tags
 }
@@ -84,6 +93,9 @@ resource "azurerm_container_app_environment" "forwarder_env" {
   name                = var.environment_name
   location            = var.location
   resource_group_name = data.azurerm_resource_group.current.name
+
+  internal_load_balancer_enabled = var.private_networking_enabled
+  infrastructure_subnet_id       = var.private_networking_enabled ? var.infrastructure_subnet_id : null
 
   tags = var.tags
 }
