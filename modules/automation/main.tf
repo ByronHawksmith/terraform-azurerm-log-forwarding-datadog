@@ -46,10 +46,10 @@ locals {
   storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=${azurerm_storage_account.control_plane.name};EndpointSuffix=${azurerm_storage_account.control_plane.primary_blob_endpoint != "" ? "core.windows.net" : ""};AccountKey=${azurerm_storage_account.control_plane.primary_access_key}"
 
   # Common app settings for all function apps
+  # Note: AzureWebJobsStorage and FUNCTIONS_EXTENSION_VERSION are auto-managed by Azure
+  # when using storage_account_name/storage_account_access_key - do not duplicate here
   common_app_settings = {
-    AzureWebJobsStorage                      = local.storage_connection_string
     WEBSITE_CONTENTAZUREFILECONNECTIONSTRING = local.storage_connection_string
-    FUNCTIONS_EXTENSION_VERSION              = "~4"
     FUNCTIONS_WORKER_RUNTIME                 = "python"
     AzureWebJobsFeatureFlags                 = "EnableWorkerIndexing"
     FUNCTIONS_WORKER_PROCESS_COUNT           = "1"
@@ -208,6 +208,13 @@ resource "azurerm_linux_function_app" "resources_task" {
 
   tags = var.tags
 
+  lifecycle {
+    ignore_changes = [
+      app_settings["AzureWebJobsStorage"],
+      app_settings["FUNCTIONS_EXTENSION_VERSION"],
+    ]
+  }
+
   depends_on = [
     azurerm_storage_share.function_content,
     azurerm_storage_container.cache
@@ -255,6 +262,13 @@ resource "azurerm_linux_function_app" "scaling_task" {
 
   tags = var.tags
 
+  lifecycle {
+    ignore_changes = [
+      app_settings["AzureWebJobsStorage"],
+      app_settings["FUNCTIONS_EXTENSION_VERSION"],
+    ]
+  }
+
   depends_on = [
     azurerm_storage_share.function_content,
     azurerm_storage_container.cache
@@ -297,6 +311,13 @@ resource "azurerm_linux_function_app" "diagnostic_settings_task" {
   }
 
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      app_settings["AzureWebJobsStorage"],
+      app_settings["FUNCTIONS_EXTENSION_VERSION"],
+    ]
+  }
 
   depends_on = [
     azurerm_storage_share.function_content,
@@ -432,7 +453,7 @@ resource "azurerm_role_assignment" "resources_task_monitoring_reader" {
   for_each = toset(local.monitored_subscriptions)
 
   scope                            = "/subscriptions/${each.value}"
-  role_definition_id               = data.azurerm_role_definition.monitoring_reader.id
+  role_definition_name             = "Monitoring Reader"
   principal_id                     = azurerm_linux_function_app.resources_task.identity[0].principal_id
   description                      = "ddlfo${local.control_plane_id}"
   skip_service_principal_aad_check = true
@@ -446,7 +467,7 @@ resource "azurerm_role_assignment" "scaling_task_contributor" {
   for_each = var.monitored_resource_groups
 
   scope                            = "/subscriptions/${each.value.subscription_id}/resourceGroups/${each.value.resource_group_name}"
-  role_definition_id               = data.azurerm_role_definition.contributor.id
+  role_definition_name             = "Contributor"
   principal_id                     = azurerm_linux_function_app.scaling_task.identity[0].principal_id
   description                      = "ddlfo${local.control_plane_id}"
   skip_service_principal_aad_check = true
@@ -460,7 +481,7 @@ resource "azurerm_role_assignment" "diagnostic_settings_task_monitoring_contribu
   for_each = toset(local.monitored_subscriptions)
 
   scope                            = "/subscriptions/${each.value}"
-  role_definition_id               = data.azurerm_role_definition.monitoring_contributor.id
+  role_definition_name             = "Monitoring Contributor"
   principal_id                     = azurerm_linux_function_app.diagnostic_settings_task.identity[0].principal_id
   description                      = "ddlfo${local.control_plane_id}"
   skip_service_principal_aad_check = true
@@ -474,7 +495,7 @@ resource "azurerm_role_assignment" "diagnostic_settings_task_reader_data_access"
   for_each = var.monitored_resource_groups
 
   scope                            = "/subscriptions/${each.value.subscription_id}/resourceGroups/${each.value.resource_group_name}"
-  role_definition_id               = data.azurerm_role_definition.reader_data_access.id
+  role_definition_name             = "Reader and Data Access"
   principal_id                     = azurerm_linux_function_app.diagnostic_settings_task.identity[0].principal_id
   description                      = "ddlfo${local.control_plane_id}"
   skip_service_principal_aad_check = true
@@ -490,7 +511,7 @@ resource "azurerm_role_assignment" "diagnostic_settings_task_reader_data_access"
 # Allows the deployer to update function apps via the SCM endpoint
 resource "azurerm_role_assignment" "deployer_task_website_contributor" {
   scope                            = azurerm_resource_group.resource_group.id
-  role_definition_id               = data.azurerm_role_definition.website_contributor.id
+  role_definition_name             = "Website Contributor"
   principal_id                     = azurerm_container_app_job.deployer_task.identity[0].principal_id
   description                      = "ddlfo${local.control_plane_id}"
   skip_service_principal_aad_check = true
@@ -504,7 +525,7 @@ resource "azurerm_role_assignment" "deployer_task_monitoring_contributor" {
   for_each = toset(local.monitored_subscriptions)
 
   scope                            = "/subscriptions/${each.value}"
-  role_definition_id               = data.azurerm_role_definition.monitoring_contributor.id
+  role_definition_name             = "Monitoring Contributor"
   principal_id                     = azurerm_container_app_job.deployer_task.identity[0].principal_id
   description                      = "ddlfo${local.control_plane_id}"
   skip_service_principal_aad_check = true
@@ -518,7 +539,7 @@ resource "azurerm_role_assignment" "deployer_task_contributor" {
   for_each = var.monitored_resource_groups
 
   scope                            = "/subscriptions/${each.value.subscription_id}/resourceGroups/${each.value.resource_group_name}"
-  role_definition_id               = data.azurerm_role_definition.contributor.id
+  role_definition_name             = "Contributor"
   principal_id                     = azurerm_container_app_job.deployer_task.identity[0].principal_id
   description                      = "ddlfo${local.control_plane_id}"
   skip_service_principal_aad_check = true
